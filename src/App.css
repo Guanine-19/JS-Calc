@@ -1,38 +1,64 @@
-.App {
-  text-align: center;
-}
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600&display=swap');
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
+.button{
+  box-shadow: 0 0 0.2rem 0 rgba(0, 0, 0, .4);   
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(5px);
+  height: 4em;
+  border-radius: 3px;
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  align-items: center;
+  font-family: 'Manrope', sans-serif;
+  font-size: large;
+  user-select: none;
+  transition: ease-out 0.2s;
+}
+
+p{
+  font-family: 'Manrope', sans-serif;
+}
+
+h2{
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+}
+
+#display-container{
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 4px 4px 0 0;
+  width: 8em;
+  height: 6em;
+}
+
+#display-container > p, #display-container > h2{
+  margin: 0;
+  float: right;
+}
+
+#history{
+  float: left;
+}
+
+i{
+  color: rgb(255, 95, 21);
+}
+
+#equals, #clear{
+  background-color: rgb(255, 95, 21);
+}
+
+#equals > i, #clear {
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.button:hover{
+  background-color: rgba(255, 255, 255, 1);
+  color: rgb(255, 95, 21);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#equals:hover,#clear:hover{
+  background-color: rgb(255, 0, 0);
 }
