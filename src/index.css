@@ -9,9 +9,19 @@ body {
   height: 100vh;
   background-image: url('https://cdn.pixabay.com/photo/2018/03/04/09/51/space-3197611_960_720.jpg');
   background-size: cover;
+  background-position-y: center;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+#credits{
+  font-size: smaller;
+  text-align: center;
+  background-color: rgb(255, 95, 21);
+  color: white;
+  margin-top: 4em;
+  width: 100%;
 }

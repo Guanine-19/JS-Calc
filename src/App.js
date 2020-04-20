@@ -62,7 +62,7 @@ class CalcButton extends React.Component{
   }
 
   letIcon(){
-    if(/*this.props.item.icon!=""*/0){
+    if(this.props.item.icon!=""){
       return <i class={this.props.item.icon}></i>
     } else return this.props.item.text
   }
@@ -236,7 +236,7 @@ class App extends React.Component{
         {CALCBUTTONS.map((item)=><CalcButton item={item} updateInputonClick={this.updateInput}/>)}
 
         <div id={equalsButton.id} class="button col-6 p-1" onClick={this.evaluate}>
-          <i class={equalsButton.icon}></i>=
+          <i class={equalsButton.icon}></i>
         </div>
       </div>
     )
