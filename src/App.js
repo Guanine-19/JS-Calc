@@ -92,6 +92,9 @@ class App extends React.Component{
       decimal: false
     }
     this.backspace = this.backspace.bind(this)
+    this.handleDec = this.handleDec.bind(this)
+    this.handleNum = this.handleNum.bind(this)
+    this.handleOP = this.handleOP.bind(this)
     this.updateInput = this.updateInput.bind(this)
     this.fixExpression = this.fixExpression.bind(this)
     this.evaluate = this.evaluate.bind(this)
@@ -109,51 +112,72 @@ class App extends React.Component{
     }
   }
 
-  updateInput(val,type){
-    if(type==="dec-button" && this.state.decimal){//don't allow repeating decimals
-      return
-    }
-    if(this.state.input==="0"){//calculator at initial state => just replace what's in the input
+  handleNum(val){
+    if(this.state.evaluated){
       this.setState({
         input: val,
-        evaluated: false
+        currentAns: val,
+        evaluated: false,
+        decimal: false
       })
-    } else if(!this.state.evaluated){//not yet evaluated => proceed to concatenate input string
-      if(type==="dec-button"){//decimal entered
-        this.setState({
-          input: this.state.input.concat(val),
-          currentAns: this.state.input.concat(val),
-          decimal: true
-        })
-      } else if (type==="op-button"){//allow another decimal after operation entered
-          this.setState({
-            input: this.state.input.concat(val),
-            currentAns: this.state.input.concat(val),
-            decimal: false
-          })
-      } else {//number entered just concatenate
-        this.setState({
-          input: this.state.input.concat(val),
-          currentAns: this.state.input.concat(val)
-        })
-      }
-      
-    } else {
-      if(type==="num-button"){//evaluated then number entered
-        this.setState({
-          input: val,
-          currentAns: val,
-          evaluated: false
-        })
-      } else {//evaluated then operation entered
-        this.setState({
-          input: this.state.historyAns[0]+val,
-          currentAns: this.state.historyAns[0]+val,
-          evaluated: false
-        })
-      }
+    } else if(this.state.input==="0" && !this.state.decimal){
+      this.setState({
+        input: val,
+        currentAns: val
+      })
+    }else {
+      this.setState({
+        input: this.state.input.concat(val),
+        currentAns: this.state.input.concat(val)
+      })
     }
   }
+
+  handleOP(val){
+    if(this.state.evaluated){
+      this.setState({
+        input: this.state.historyAns[0]+val,
+        currentAns: this.state.historyAns[0]+val,
+        evaluated: false,
+        decimal: false
+      })
+    } else {
+      this.setState({
+        input: this.state.input.concat(val),
+        currentAns: this.state.input.concat(val),
+        decimal: false
+      })
+    }
+  }
+
+  handleDec(val){
+    if(!this.state.decimal && this.state.input!="0"){
+      this.setState({
+        input: this.state.input.concat(val),
+        currentAns: this.state.input.concat(val),
+        decimal: true
+      })
+    } else if(!this.state.decimal && /(\+|\-|\*|\/|0)$/.test(this.state.input)){
+      this.setState({
+        input: "0.",
+        currentAns: "0.",
+        decimal: true
+      })
+    } else if (this.state.decimal) {
+      return
+    }
+  }
+
+  updateInput(val,type){
+    switch(type){
+      case "num-button": this.handleNum(val); break;
+      case "op-button": this.handleOP(val); break;
+      case "dec-button": this.handleDec(val); break;
+      case "func-button": break;
+      default: break;
+    }
+  }
+
   fixExpression(str){
     //negative*negative = positive
     str = str.replace(/--/,"+");
@@ -190,7 +214,8 @@ class App extends React.Component{
     this.setState({
       currentAns: "0",
       input: "0",
-      evaluated: false
+      evaluated: false,
+      decimal: false
     })
   }
   render(){
