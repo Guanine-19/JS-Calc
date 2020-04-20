@@ -9,7 +9,6 @@ function createButton (id, text, icon, myclass) {
 }
 
 const CALCBUTTONS = [
-  new createButton("backspace","backspace","fas fa-backspace","func-button"),
   new createButton("percent","%","fas fa-percent","func-button"),
   new createButton("divide","/","fas fa-divide","op-button"),
   new createButton("seven","7","","num-button"),
@@ -25,9 +24,10 @@ const CALCBUTTONS = [
   new createButton("three","3","","num-button"),
   new createButton("add","+","fas fa-plus","op-button"),
   new createButton("zero","0","","num-button"),
-  new createButton("decimal",".","","func-button")
+  new createButton("decimal",".","","dec-button")
 ];
 
+const backspaceButton = new createButton("backspace","backspace","fas fa-backspace","func-button");
 const clearButton = new createButton("clear","AC","","func-button");
 const equalsButton = new createButton("equals","=","fas fa-equals","func-button");
 
@@ -68,7 +68,7 @@ class CalcButton extends React.Component{
   }
 
   updateInputonClick(){
-    this.props.updateInputonClick(this.props.item.text);
+    this.props.updateInputonClick(this.props.item.text,this.props.item.class);
   }
   
   render(){
@@ -89,44 +89,83 @@ class App extends React.Component{
       input: "0",
       historySolve: [],
       historyAns: [],
+      decimal: false
     }
+    this.backspace = this.backspace.bind(this)
     this.updateInput = this.updateInput.bind(this)
+    this.fixExpression = this.fixExpression.bind(this)
     this.evaluate = this.evaluate.bind(this)
     this.clear = this.clear.bind(this)
   }
-  updateInput(val){
-    if(val === "backspace"){
-      if (this.state.input.length>1){
-        this.setState({
-          input: this.state.input.substring(0,this.state.input.length-1)
-        })
-      } else {
-        this.setState({
-          input: "0"
-        })
-      }
+  backspace(){
+    if (this.state.input.length>1){
+      this.setState({
+        input: this.state.input.substring(0,this.state.input.length-1)
+      })
+    } else {
+      this.setState({
+        input: "0"
+      })
+    }
+  }
+
+  updateInput(val,type){
+    if(type==="dec-button" && this.state.decimal){//don't allow repeating decimals
       return
     }
-    if(this.state.input==="0"){
+    if(this.state.input==="0"){//calculator at initial state => just replace what's in the input
       this.setState({
         input: val,
         evaluated: false
       })
-    } else if(!this.state.evaluated){
-      this.setState({
-        input: this.state.input.concat(val),
-        currentAns: this.state.input.concat(val)
-      })
+    } else if(!this.state.evaluated){//not yet evaluated => proceed to concatenate input string
+      if(type==="dec-button"){//decimal entered
+        this.setState({
+          input: this.state.input.concat(val),
+          currentAns: this.state.input.concat(val),
+          decimal: true
+        })
+      } else if (type==="op-button"){//allow another decimal after operation entered
+          this.setState({
+            input: this.state.input.concat(val),
+            currentAns: this.state.input.concat(val),
+            decimal: false
+          })
+      } else {//number entered just concatenate
+        this.setState({
+          input: this.state.input.concat(val),
+          currentAns: this.state.input.concat(val)
+        })
+      }
+      
     } else {
-      this.setState({
-        input: this.state.historyAns[0]+val,
-        currentAns: this.state.input.concat(val),
-        evaluated: false
-      })
+      if(type==="num-button"){//evaluated then number entered
+        this.setState({
+          input: val,
+          currentAns: val,
+          evaluated: false
+        })
+      } else {//evaluated then operation entered
+        this.setState({
+          input: this.state.historyAns[0]+val,
+          currentAns: this.state.historyAns[0]+val,
+          evaluated: false
+        })
+      }
     }
   }
+  fixExpression(str){
+    //negative*negative = positive
+    str = str.replace(/--/,"+");
+    //use last operation except minus sign
+    str = str.replace(/(\+|\*|\\|\-)+(?=[^\d\-])/g,"");
+    //fix zeroes
+    str = str.replace(/0+(?=[1-9])/,"");
+    return str;
+  }
+
   evaluate(){
-    let str = this.state.input.replace(/^0+/g,"");
+    let str = this.fixExpression(this.state.input);
     try {
       eval(str)
     }
@@ -143,7 +182,8 @@ class App extends React.Component{
       currentAns: answer,
       historySolve: [this.state.input,...this.state.historySolve],
       historyAns: [answer,...this.state.historyAns],
-      evaluated: true
+      evaluated: true,
+      decimal: false
     })
   }
   clear(){
@@ -163,6 +203,9 @@ class App extends React.Component{
         </div>
         <div id={clearButton.id} class="button col-3 p-1" onClick={this.clear}>
           {clearButton.text}
+        </div>
+        <div id={backspaceButton.id} class="button col-3 p-1" onClick={this.backspace}>
+          <i class={backspaceButton.icon}></i>
         </div>
 
         {CALCBUTTONS.map((item)=><CalcButton item={item} updateInputonClick={this.updateInput}/>)}
