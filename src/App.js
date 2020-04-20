@@ -220,7 +220,7 @@ class App extends React.Component{
   }
   render(){
     return(
-      <div class="row">
+      <div id="calculator" class="row">
         <div id="display-container" class="col-sm-12 p-3">
           <History inhistoryAns={this.state.historyAns} inhistorySolve={this.state.historySolve}/>
           <p>{this.state.input}</p><br />
